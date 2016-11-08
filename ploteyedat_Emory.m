@@ -1,6 +1,6 @@
-datfil='IW0603084mua.nex'
-setnum='SET001'
-stmtyp='ctx'
+datfil='TT091103.2'
+setnum='SET051'
+stmtyp='bmp'
 
 
 if strmatch(datfil(find(double(datfil==46))+1:end),'nex') % for nex files
@@ -80,17 +80,17 @@ else % for ctx files
     
     ini=datfil(1:2);
     if strcmp(ini,'IW')==1 || strcmp(ini,'iw')==1
-        datfil=['S:\Cortex Data\Irwin\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Irwin\' datfil];
     elseif strcmp(ini,'MP')==1 || strcmp(ini,'mp')==1
-        datfil=['S:\Cortex Data\Peepers\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Peepers\' datfil];
     elseif strcmp(ini,'WR')==1 || strcmp(ini,'wr')==1
-        datfil=['S:\Cortex Data\Wilbur\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Wilbur\' datfil];
     elseif strcmp(ini,'TT')==1 || strcmp(ini,'tt')==1
-        datfil=['S:\Cortex Data\Timmy\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Timmy\' datfil];
     elseif strcmp(ini,'JN')==1 || strcmp(ini,'jn')==1
-        datfil=['S:\Cortex Data\Guiseppe\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Guiseppe\' datfil];
     elseif strcmp(ini,'TD')==1 || strcmp(ini,'td')==1
-        datfil=['S:\Cortex Data\Theodore\' datfil];
+        datfil=['R:\Buffalo Lab\Cortex Data\Theodore\' datfil];
     end
 
     [time_arr,event_arr,eog_arr,epp_arr,header,trialcount]  = get_ALLdata(datfil);
@@ -178,6 +178,8 @@ else % for ctx files
 
     clear x y
     x=meanx; y=meany;
+    
+%     figure;scatter(x,y) % 9 calibration points, should look like a cross,
 
     meanxorigin = mean([x(6) x(2) x(1) x(5) x(9) ],2);
     xscale = mean([6/(x(8)-meanxorigin) 3/(x(4)-meanxorigin) 3/(abs(x(3)-meanxorigin)) 6/(abs(x(7)-meanxorigin))],2);
@@ -242,17 +244,17 @@ end
 % (instead of cndlop=1:200)
 for cndlop=1:size(trind,1)
     
-    if ltmat(cndlop,1)>4000 %for limiting to pics with a minimum encoding LT
+    if ltmat(cndlop,1)>2000 %for limiting to pics with a minimum encoding LT
     
         if strmatch(stmtyp,'ctx') % ctx
             if ~isempty(strfind(setnum,'b')) || str2double(setnum(find(double(setnum==84))+1:end))>=118
                 if ~strcmp(setnum,'SET112b')
-                    [imgmtx, dmns, notes]=loadcx(strcat('S:\VPC Stimuli\CTX\',setnum,'\',num2str(cndlop+99),'.ctx'));
+                    [imgmtx, dmns, notes]=loadcx(strcat('R:\Buffalo Lab\eblab\VPC Stimuli\CTX\',setnum,'\',num2str(cndlop+99),'.ctx'));
                 else
-                    [imgmtx, dmns, notes]=loadcx(strcat('S:\VPC Stimuli\CTX\',setnum,'\eee',num2str(cndlop+99),'.ctx'));
+                    [imgmtx, dmns, notes]=loadcx(strcat('R:\Buffalo Lab\eblab\VPC Stimuli\CTX\',setnum,'\eee',num2str(cndlop+99),'.ctx'));
                 end
             else
-                [imgmtx, dmns, notes]=loadcx(strcat('S:\VPC Stimuli\CTX\',setnum,'\eee',num2str(cndlop+99),'.ctx'));
+                [imgmtx, dmns, notes]=loadcx(strcat('R:\Buffalo Lab\eblab\VPC Stimuli\CTX\',setnum,'\eee',num2str(cndlop+99),'.ctx'));
             end
             newimg = imgmtx - 127;
             lut = loadlut('bg001.lut');
@@ -261,16 +263,17 @@ for cndlop=1:size(trind,1)
             imshow(newimg, dbllut);
 
         elseif strmatch(stmtyp,'bmp') % bmp
-            [imgmtx,map] = imread(strcat('S:\VPC Stimuli\BMP\',setnum,'\',num2str(cndlop),'.bmp'));
+            [imgmtx,map] = imread(strcat('R:\Buffalo Lab\eblab\VPC Stimuli\BMP\',setnum,'\',num2str(cndlop),'.bmp'));
             figure;
             image(imgmtx);
         end
 
-        hold on;
         h2=axes('Position',get(gca,'Position'),'Layer','top');
-        h=scatter(eyedat{trind(cndlop,1)}(1,:),eyedat{trind(cndlop,1)}(2,:),3,'ob','MarkerFaceColor','b');
-        hold on;
-        h=scatter(eyedat{trind(cndlop,2)}(1,:),eyedat{trind(cndlop,2)}(2,:),3,'or','MarkerFaceColor','r');
+        hold on
+        s1=scatter(eyedat{trind(cndlop,1)}(1,:),eyedat{trind(cndlop,1)}(2,:),3,'oy','MarkerFaceColor','y');
+        s2=scatter(eyedat{trind(cndlop,2)}(1,:),eyedat{trind(cndlop,2)}(2,:),3,'oc','MarkerFaceColor','c');
+        l1=plot(eyedat{trind(cndlop,1)}(1,:),eyedat{trind(cndlop,1)}(2,:),'y');
+        l2=plot(eyedat{trind(cndlop,2)}(1,:),eyedat{trind(cndlop,2)}(2,:),'c');
         xlim([-5.5 5.5]);
         ylim([-5.5 5.5]);
         axis off;
